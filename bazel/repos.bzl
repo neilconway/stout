@@ -15,6 +15,14 @@ load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//3rdparty/bazel-rules-picojson:repos.bzl", picojson_repos = "repos")
 load("//3rdparty/bazel-rules-rapidjson:repos.bzl", rapidjson_repos = "repos")
 
+def _github_archive(repo, commit, **kwargs):
+    repo_name = repo.split("/")[-1]
+    http_archive(
+        urls = [repo + "/archive/" + commit + ".zip"],
+        strip_prefix = repo_name + "-" + commit,
+        **kwargs
+    )
+
 def repos(external = True, repo_mapping = {}):
     """Adds repositories/archives needed by stout
 
@@ -32,13 +40,11 @@ def repos(external = True, repo_mapping = {}):
         repo_mapping = repo_mapping,
     )
 
-    maybe(
-        http_archive,
+    _github_archive(
         name = "com_google_absl",
-        urls = ["https://github.com/abseil/abseil-cpp/archive/refs/tags/20211102.0.tar.gz"],
-        strip_prefix = "abseil-cpp-20211102.0",
-        sha256 = "dcf71b9cba8dc0ca9940c4b316a0c796be8fab42b070bb6b7cab62b48f0e66c4",
-        repo_mapping = repo_mapping,
+        repo = "https://github.com/abseil/abseil-cpp",
+        commit = "4a2c63365eff8823a5221db86ef490e828306f9d",  # Abseil LTS 20240116.0
+        sha256 = "f49929d22751bf70dd61922fb1fd05eb7aec5e7a7f870beece79a6e28f0a06c1",
     )
 
     maybe(
@@ -76,12 +82,11 @@ def repos(external = True, repo_mapping = {}):
     maybe(
         http_archive,
         name = "com_google_protobuf",
-        strip_prefix = "protobuf-3.19.1",
+        sha256 = "008a11cc56f9b96679b4c285fd05f46d317d685be3ab524b2a310be0fbad987e",
+        strip_prefix = "protobuf-29.3",
         urls = [
-            "https://mirror.bazel.build/github.com/protocolbuffers/protobuf/archive/v3.19.1.tar.gz",
-            "https://github.com/protocolbuffers/protobuf/archive/v3.19.1.tar.gz",
+            "https://github.com/protocolbuffers/protobuf/archive/v29.3.tar.gz",
         ],
-        sha256 = "87407cd28e7a9c95d9f61a098a53cf031109d451a7763e7dd1253abf8b4df422",
         repo_mapping = repo_mapping,
     )
 
